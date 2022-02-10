@@ -2,11 +2,11 @@ const app = require('express')();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http,{
     cors: {
-        origin: "http://localhost:3001",
+        origin: "http://localhost:3000",
         methods: ["GET", "POST"],
   }
 });
-const port = 3000;
+const port = 3001;
 
 
 http.listen(port, ()=> {
@@ -15,10 +15,10 @@ http.listen(port, ()=> {
 
 io.on('connection', function (socket) {
   console.log(socket.id, 'Connected');
-  socket.emit('msg', `${socket.id} 연결 되었습니다.`);
+  socket.join("public");
+    io.to("public").emit('msg', `${socket.id} 연결 되었습니다.`);
 
   socket.on('msg', function(data){
-    console.log(socket.id,data);
-    socket.emit('msg', `Server: "${data} 받았습니다.`)
+    socket.to("public").emit('msg',`${socket.id}:${data}`);
   })
 })
