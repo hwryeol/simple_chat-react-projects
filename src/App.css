@@ -1,4 +1,24 @@
+.App{
+  position: absolute;
+  background-color: tomato;
+  width: 400px;
+  height:500px;
+}
+li{
+  list-style: none;
+  border-radius: 20px;
+  background-color: gainsboro;
+  margin-bottom: 5px;
+}
+ul{
+display: flex;
+flex-direction: column-reverse;
+overflow-y:auto;
+padding: 0;
+height: 500px;
+}
 .abc{
+  text-align: right;
   color:red;
 }
 .bca{
