@@ -15,10 +15,11 @@ http.listen(port, ()=> {
   console.log("listening on *: " + port);
 })
 
-// app.use( express.static(path.join(__dirname,'public')));
+// app.use( express.static(path.join(__dirname,'build')));
 
 // app.get('/',(req,res)=>{
-//   res.sendFile(path.join(__dirname,'src/public/index.html'));
+//   console.log(path.join(__dirname,'build/static'))
+//   res.sendFile(path.join(__dirname,'build\\index.html'));
 // })
 
 io.on('connection', function (socket) {
@@ -27,6 +28,7 @@ io.on('connection', function (socket) {
     io.to("public").emit('msg', `${socket.id} 연결 되었습니다.`);
 
   socket.on('msg', function(data){
+    console.log(data)
     socket.to("public").emit('msg',`${socket.id}:${data}`);
   })
 })

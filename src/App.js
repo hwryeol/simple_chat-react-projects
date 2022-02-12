@@ -3,6 +3,8 @@ import React from "react"
 import './App.css';
 import {useState,useEffect} from "react"
 
+import icon from "./img/arrow.png"
+
 const socket = io('http://localhost:3001/')
 
 const listref = React.createRef();
@@ -15,10 +17,29 @@ function App() {
 
   useEffect(()=>{
     socket.on('msg', (data)=>{
+      console.log(data)
       const newData = [data,false]
       setChatData(prev => [newData,...prev])
       })
   },[])
+
+  const emitMsg = () => {
+      if(emitText){
+        socket.emit('msg',emitText);
+        const newChatData = [emitText,true]
+        setChatData(prev=>[newChatData,...prev]);
+      };
+      setEmitText("");
+      console.log(inputref)
+      inputref.current.value = "";
+  }
+
+  const onKeyPress=(e)=>{
+    if(e.key == 'Enter' && !e.shiftKey){
+      e.preventDefault();
+      emitMsg();
+    }
+  }
   
   return (
     <div className="App">
@@ -29,19 +50,13 @@ function App() {
     </ul>
     <div className="inputSection">
       <form>
-      <input ref={inputref} type="text" onChange={(data)=>{
+      <textarea className="text-input" ref={inputref} onChange={(data)=>{
       setEmitText(data.target.value);
-      }}/>
-      <input type="submit" value="클릭" onClick={(event)=>{
+      }} onKeyPress={onKeyPress}/>
+      <input id="submitBtn" type="image" src={icon} alt="" onClick={(event)=>{
         event.preventDefault();
-        if(emitText){
-          socket.emit('msg',emitText);
-          setEmitText("");
-          inputref.current.value = "";
-          const newChatData = [emitText,true]
-          setChatData(prev=>[newChatData,...prev]);
-        };
-        }}/>
+        emitMsg();
+        }}></input>
       </form>
     </div>
     </div>
