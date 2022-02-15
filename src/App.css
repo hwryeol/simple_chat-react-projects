@@ -28,7 +28,6 @@ li{
   border-radius: 5px;
   background-color: gainsboro;
   padding: 3px 10px;
-  margin-bottom: 5px;
 }
 ul{
 display: flex;
@@ -40,10 +39,46 @@ padding: 0;
 height: 500px;
 margin: 0;
 }
-.abc{
+.myChat{
+  position: relative;
+	background: #00aabb;
+	border-radius: .4em;
+  margin:5px 20px;
+  padding:10px;
   text-align: right;
-  color:red;
 }
-.bca{
-  color:blue;
+.myChat::after{
+  content: '';
+	position: absolute;
+	right: 0;
+	top: 50%;
+	width: 0;
+	height: 0;
+	border: 20px solid transparent;
+	border-left-color: #00aabb;
+	border-right: 0;
+	border-bottom: 0;
+	margin-top: -10px;
+	margin-right: -20px;
+}
+.msg{
+  position: relative;
+	background: #0dbd00;
+	border-radius: .4em;
+  margin:20px;
+  padding:10px;
+}
+.msg::after{
+  content: '';
+	position: absolute;
+	left: 0;
+	top: 50%;
+	width: 0;
+	height: 0;
+	border: 20px solid transparent;
+	border-right-color: #0dbd00;
+	border-left: 0;
+	border-top: 0;
+	margin-top: -10px;
+	margin-left: -20px;
 }
