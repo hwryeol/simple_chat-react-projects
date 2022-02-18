@@ -1,11 +1,13 @@
 .App{
   position: absolute;
-  background-color: tomato;
   width: 400px;
   height:500px;
+  border:1px solid;
+  font-family: 'Noto Sans KR', sans-serif;
 }
+
 .text-input{
-  width:346px;
+  width:320px;
   height: 50px;
   resize:none;
   border-radius: 5px;
@@ -28,8 +30,9 @@ li{
   border-radius: 5px;
   background-color: gainsboro;
   padding: 3px 10px;
+  cursor:pointer;
 }
-ul{
+.chatData{
 display: flex;
 white-space: pre-wrap;
 flex-direction: column-reverse;
@@ -38,6 +41,18 @@ word-wrap: break-word;
 padding: 0;
 height: 500px;
 margin: 0;
+}
+
+.userList{
+  position: absolute;
+  background-color: white;
+  border:1px solid;
+  left:400px;
+  top:-1px;
+  height:500px;
+  width:200px;
+  margin:0;
+  padding: 0;
 }
 .myChat{
   position: relative;

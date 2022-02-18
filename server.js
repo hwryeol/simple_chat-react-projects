@@ -30,7 +30,6 @@ function getPublicRooms(){
       publicRooms.push(key);
     }
   })
-  
   return publicRooms;
 }
 
@@ -40,27 +39,24 @@ function getSocketFromID(socketID,namespace="/"){
 
 function getUserList(roomName){
   let userList = [];
-  io.sockets.adapter.rooms.get(roomName).forEach((value)=>{
+  io.sockets.adapter.rooms.get(roomName)?.forEach((value)=>{
     userList.push(getSocketFromID(value).username);
   });
   return userList;
 }
 
 io.on('connection', (socket) => {
+  socket.emit('room_data', getPublicRooms());
   socket.on('username', (data=`user${socket.id.slice(0,5)}`)=>{
     socket["username"] = data;
   })
-  socket.emit('public_room',getPublicRooms());
   
   socket.on('enter_room', (roomName)=>{
-    let room_data = {
-      name:roomName,
-      // userList:getUserList(roomName),
-    }
-    socket.emit('room_data', room_data);
     socket.join(roomName);
-
-    io.to("public").emit('notice', `${socket.username}님이 연결 되었습니다.`);
+    io.sockets.emit('room_data', getPublicRooms());
+    io.sockets.emit('userList', getUserList(roomName));
+    console.log(getUserList(roomName));
+    io.to(roomName).emit('notice', `${socket.username}님이 연결 되었습니다.`);
 
     socket.on('msg', (data) => {
       socket.to(roomName).emit('msg', socket.username, data);

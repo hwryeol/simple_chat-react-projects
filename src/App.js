@@ -14,83 +14,128 @@ const roomName = React.createRef();
 
 let username = "";
 
+class UserList{
+
+  
+
+}
+
 
 function App() {
   const [emitText,setEmitText] = useState("");
   const [chatData,setChatData] = useState([]);
-  const [modalOpen, setModalOpen] = useState(false);
-
-  const openModal = () => {
-    setModalOpen(true);
-  };
-  const closeModal = () => {
-    username = usernameref.current.value;
-    socket.emit('username',username);
-    setModalOpen(false);
-  };
-
+  const [roomList,setRoomList] = useState([]);
+  const [userList,setUserList] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isRoomList,setIsRoomList] = useState(true);
+  const [isServerConnect,setIsServerConnect] = useState(false);
 
   useEffect(()=>{
     openModal();
-    socket.on('msg', (username,message)=>{
-      const newData = [username,message,"msg"]
-      setChatData(prev => [newData,...prev])
+    socket.on('connect', ()=>{
+      setIsServerConnect(true);
+      socket.on('disconnect', ()=>{
+        setIsServerConnect(false);
+        window.location.reload();
       })
-    socket.on('notice', (data)=>{
-      const newData = [data,"notice"]
-      setChatData(prev => [newData,...prev])
+      socket.on('msg', (username,msg)=>{
+        putChatDataFront(username,msg,'msg');
+        })
+      socket.on('notice', (msg)=>{
+        putChatDataFront('server',msg,'notice');
+        })
+      socket.on('room_data',(data)=>{
+        setRoomList(data);
       })
+      socket.on('userList',(data)=>{
+        setUserList(data);
+      })
+    })
   },[])
 
-  const emitMsg = () => {
+  function sendEmitMsg(){
       if(emitText){
         socket.emit('msg',emitText);
         const newChatData = [username,emitText,"myChat"]
         setChatData(prev=>[newChatData,...prev]);
       };
       setEmitText("");
-      console.log(inputref)
       inputref.current.value = "";
   }
 
-  const onKeyPress=(e)=>{
+  function putChatDataFront(username,msg,dataType){
+        const newData = [username,msg,dataType]
+        setChatData(prev => [newData,...prev])
+      }
+
+  function PressEnterSendEmitMsg(e){
     if(e.key == 'Enter' && !e.shiftKey){
       e.preventDefault();
-      emitMsg();
+      sendEmitMsg();
     }
   }
-  const enter= (e)=>{
+  function enter(e){
     if(e.key == 'Enter' && !e.shiftKey){
       e.preventDefault();
+      setIsRoomList(false);
       socket.emit('enter_room', roomName.current.value )
     }
   }
+  function aa(e){
+    setIsRoomList(false);
+    socket.emit('enter_room', e.target.innerText );
+  }
+
+  function openModal(){
+    setIsModalOpen(true);
+  };
+  function closeModal(){
+    username = usernameref.current.value;
+    if(!username){
+      username = `annon-${socket.id.slice(0,5)}`
+    }
+    socket.emit('username',username);
+    setIsModalOpen(false);
+  };
+
   
   return (
     <div className="App">
-    <ul>
-      {chatData?.map((data) => {
-        console.log(data);
-        return <li key={`list_key${data.id}`} className={data[2]}>{`${data[0]},${data[1]}`}</li>
-      })}
-    </ul>
-    <div className="inputSection">
-      <form>
+    {isServerConnect && (isRoomList ? 
+    <>
+      <ul className="chatData">
+        {roomList?.map((data,i) => <li key={`roomList_${i}`} onClick={aa}>{data}</li>)}
+      </ul>
       <input type="text" ref={roomName} onKeyPress={enter}></input>
-      <textarea className="text-input" ref={inputref} onChange={(data)=>{
-      setEmitText(data.target.value);
-      }} onKeyPress={onKeyPress}/>
-      <input id="submitBtn" type="image" src={icon} alt="" onClick={(event)=>{
-        event.preventDefault();
-        emitMsg();
-        }}></input>
-      </form>
-      <Modal open={modalOpen} close={closeModal} header="modal heading">
+      <Modal open={isModalOpen} close={closeModal} header="modal heading">
         <input type="text" ref={usernameref}></input>
       </Modal>
+    </>:
+    <>
+      <ul className="chatData">
+        {chatData?.map((data) => {
+          console.log(data);
+          return <li key={`list_key${data.id}`} className={data[2]}>{`${data[0]}:${data[1]}`}</li>
+        })}
+      </ul>
+      <ul className="userList">
+        {userList?.map((data,i) => <li key={`userList_${i}`}>{data}</li>)}
+      </ul>
+      <div className="inputSection">
+        <form>
+          <textarea className="text-input" ref={inputref} onChange={(data)=>{
+          setEmitText(data.target.value);
+          }} onKeyPress={PressEnterSendEmitMsg}/>
+          <input id="submitBtn" type="image" src={icon} alt="" onClick={(event)=>{
+            event.preventDefault();
+            sendEmitMsg();
+          }}></input>
+        </form>
+        </div>
+    </>
+    )}
     </div>
-    </div>
-  );
+    );
 }
 
 export default App;
