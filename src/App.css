@@ -1,71 +1,127 @@
 .App{
   position: absolute;
+  background-color: white;
+  border:0.5px solid;
   width: 400px;
-  height:500px;
-  border:1px solid;
+  height:550px;
   font-family: 'Noto Sans KR', sans-serif;
 }
-
+.roomName{
+  position: absolute;
+  margin:10px;
+  font-weight: bold;
+}
+.icon{
+  position:absolute;
+  cursor: pointer;
+  right:0;
+  width:30px;
+  height: 30px;
+  margin: 8px;
+}
+.menubar{
+  display:flex;
+  justify-content: space-between;
+  background-color: #dbdbdb;
+  height:50px;
+}
+.inputRoomName{
+  border-collapse: collapse;
+  border-radius: 0px;
+  border: 0px;
+  bottom: 0px;
+  width:98%;
+  height: 30px;
+  outline:none;
+}
 .text-input{
-  width:320px;
+  width:calc(100% - 25px);
   height: 50px;
   resize:none;
-  border-radius: 5px;
   padding:12px;
 }
-form{
+.text-input:focus{
+  outline: none;
+}
+.inputSection{
   margin-top: 5px;
   position: relative;
 }
 #submitBtn{
   position: absolute;
-  width:68px;
-  top:0px;
+  top:10px;
+  width:34px;
+  left:366px;
 }
 .text-input::-webkit-scrollbar{
   display: none;
 }
 li{
   list-style: none;
-  border-radius: 5px;
-  background-color: gainsboro;
+  background-color: #999999;
   padding: 3px 10px;
   cursor:pointer;
 }
 .chatData{
 display: flex;
+position: relative;
 white-space: pre-wrap;
 flex-direction: column-reverse;
 overflow-y:auto;
 word-wrap: break-word;
 padding: 0;
-height: 500px;
+bottom:0;
+width:100%;
+height: calc(100% - 130px);
 margin: 0;
+}
+.chatData::-webkit-scrollbar{
+  width:8px;
+  height:2px;
+  background-color: #dbdbdb;
+}
+.chatData::-webkit-scrollbar-thumb{
+  background-color: #999999;
+  height:20px;
+  border-radius: 10px;
+}
+
+@keyframes userListShow {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .userList{
   position: absolute;
   background-color: white;
   border:1px solid;
-  left:400px;
+  right:0px;
   top:-1px;
   height:500px;
   width:200px;
   margin:0;
   padding: 0;
+  display: none;
+}
+.userList.open{
+  display:block;
+  animation:userListShow 0.5s;
 }
 .myChat{
   position: relative;
 	background: #00aabb;
 	border-radius: .4em;
-  margin:5px 20px;
+  margin:10px 20px;
   padding:10px;
   text-align: right;
 }
 .myChat::after{
   content: '';
 	position: absolute;
-	right: 0;
 	top: 50%;
 	width: 0;
 	height: 0;
@@ -80,7 +136,7 @@ margin: 0;
   position: relative;
 	background: #0dbd00;
 	border-radius: .4em;
-  margin:20px;
+  margin:10px;
   padding:10px;
 }
 .msg::after{

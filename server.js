@@ -15,12 +15,14 @@ http.listen(port, ()=> {
   console.log("listening on *: " + port);
 })
 
-// app.use( express.static(path.join(__dirname,'build')));
 
-// app.get('/',(req,res)=>{
-//   console.log(path.join(__dirname,'build/static'))
-//   res.sendFile(path.join(__dirname,'build\\index.html'));
-// })
+app.use( express.static(path.join(__dirname,'build')));
+
+app.get('/',(req,res)=>{
+  console.log(path.join(__dirname,'build/static'))
+  res.sendFile(path.join(__dirname,'build\\index.html'));
+})
+
 function getPublicRooms(){
   let {rooms,sids} = io.sockets.adapter;
   let publicRooms = [];
@@ -53,14 +55,30 @@ io.on('connection', (socket) => {
   
   socket.on('enter_room', (roomName)=>{
     socket.join(roomName);
-    io.sockets.emit('room_data', getPublicRooms());
+    
+    io.sockets.emit('room_data', getPublicRooms(), roomName, getUserList(roomName).length);
     io.sockets.emit('userList', getUserList(roomName));
-    console.log(getUserList(roomName));
     io.to(roomName).emit('notice', `${socket.username}님이 연결 되었습니다.`);
 
     socket.on('msg', (data) => {
       socket.to(roomName).emit('msg', socket.username, data);
     });
 
+    socket.on('disconnecting',()=>{
+      io.to(roomName).emit('notice', `${socket.username}님이 나갔습니다`);
+    })
+    socket.on('disconnect',()=>{
+      io.sockets.emit('userList', getUserList(roomName));
+      io.sockets.emit('room_data', getPublicRooms());
+    })
+    socket.on('leave_room',()=>{
+      socket.leave(roomName);
+      io.sockets.emit('userList', getUserList(roomName));
+      io.to(roomName).emit('notice', `${socket.username}님이 나갔습니다`);
+    })
   })
+  socket.on('roomList',()=>{
+    socket.emit('room_data',getPublicRooms());
+  })
+
 })
